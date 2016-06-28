@@ -5,57 +5,35 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement
 public class Taxi {
-	private String id;
 	private String name;
 	private String phone;
-	private Double longi;
-	private Double lat;
+	private Location taxiLocation;
 	private Boolean isPink;
 	private Boolean isAvailable;
-	private Double customerLat;
-	private Double customerLong;
+	private Location tripStartLocation;
+	private Instant tripStartTime;
 
-	public Double getCustomerLat() {
-		return customerLat;
+	public Taxi() {
+
 	}
 
-	public void setCustomerLat(Double customerLat) {
-		this.customerLat = customerLat;
+	public Taxi(Taxi pTaxi) {
+		name = pTaxi.getName();
+		phone = pTaxi.getPhone();
+		taxiLocation = pTaxi.getTaxiLocation();
+		isPink = pTaxi.getIsPink();
+		isAvailable = pTaxi.getIsAvailable();
+		tripStartLocation = pTaxi.getTripStartLocation();
+		tripStartTime = pTaxi.getTripStartTime();
 	}
 
-	public Double getCustomerLong() {
-		return customerLong;
+
+	public Instant getTripStartTime() {
+		return tripStartTime;
 	}
 
-	public void setCustomerLong(Double customerLong) {
-		this.customerLong = customerLong;
-	}
-
-	private Instant tripStart;
-	private Instant tripEnd;
-
-	public Instant getTripStart() {
-		return tripStart;
-	}
-
-	public void setTripStart(Instant tripStart) {
-		this.tripStart = tripStart;
-	}
-
-	public Instant getTripEnd() {
-		return tripEnd;
-	}
-
-	public void setTripEnd(Instant tripEnd) {
-		this.tripEnd = tripEnd;
-	}
-
-	public String getId() {
-		return id;
-	}
-
-	public void setId(String id) {
-		this.id = id;
+	public void setTripStartTime(Instant tripStart) {
+		this.tripStartTime = tripStart;
 	}
 
 	public String getName() {
@@ -74,20 +52,20 @@ public class Taxi {
 		this.phone = phone;
 	}
 
-	public Double getLongi() {
-		return longi;
+	public Location getTaxiLocation() {
+		return taxiLocation;
 	}
 
-	public void setLongi(Double longi) {
-		this.longi = longi;
+	public void setTaxiLocation(Location taxiLocation) {
+		this.taxiLocation = taxiLocation;
 	}
 
-	public Double getLat() {
-		return lat;
+	public Location getTripStartLocation() {
+		return tripStartLocation;
 	}
 
-	public void setLat(Double lat) {
-		this.lat = lat;
+	public void setTripStartLocation(Location tripStartLocation) {
+		this.tripStartLocation = tripStartLocation;
 	}
 
 	public Boolean getIsPink() {
