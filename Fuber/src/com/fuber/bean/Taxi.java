@@ -1,6 +1,7 @@
 package com.fuber.bean;
 
 import java.time.Instant;
+
 import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement
@@ -25,6 +26,7 @@ public class Taxi {
 		isAvailable = pTaxi.getIsAvailable();
 		tripStartLocation = pTaxi.getTripStartLocation();
 		tripStartTime = pTaxi.getTripStartTime();
+		System.out.println("----"+taxiLocation.getLat());
 	}
 
 

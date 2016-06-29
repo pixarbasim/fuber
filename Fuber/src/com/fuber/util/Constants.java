@@ -11,13 +11,13 @@ public final class Constants {
 		public  static final String DATABASE_NAME = "fuberDatabase";
 		public  static final String TAXI_COL_ID = "_id";
 		public  static final String TAXI_COL_NAME = "name";
-		public  static final String TAXI_COL_TAXI_LAT = "taxiLat";
-		public  static final String TAXI_COL_TAXI_LONG = "taxiLongi";
+		public  static final String TAXI_COL_TAXI_LAT = "lat";
+		public  static final String TAXI_COL_TAXI_LONG = "longi";
 		public  static final String TAXI_COL_PHONE = "phone";
 		public  static final String TAXI_COL_PINK = "pink";
 		public  static final String TAXI_COL_AVAILABLE = "available";
-		public  static final String TAXI_COL_TRIP_START_LAT = "tripStartLat";
-		public  static final String TAXI_COL_TRIP_START_LONG = "tripStartLongi";
+		public  static final String TAXI_COL_TRIP_START_LAT = "customerLat";
+		public  static final String TAXI_COL_TRIP_START_LONG = "customerLong";
 		public  static final String TAXI_COL_TRIP_START = "tripStart";
 		
 

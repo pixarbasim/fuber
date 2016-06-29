@@ -13,13 +13,9 @@ import com.sun.jersey.api.NotFoundException;
 @XmlRootElement
 public class ErrorMessage {
 
-	@XmlElement(name = "status")
 	private int status;
-	@XmlElement(name = "code")
 	private int code;
-	@XmlElement(name = "message")
 	private String message;
-	@XmlElement(name = "developerMessage")
 	private String developerMessage;
 
 	public ErrorMessage() {

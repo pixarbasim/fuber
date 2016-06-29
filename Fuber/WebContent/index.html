@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>fUber</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link
+	href="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap-combined.min.css"
+	rel="stylesheet">
+<script src="http://ajax.aspnetcdn.com/ajax/jquery/jquery-1.9.0.js"></script>
+<script
+	src="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/js/bootstrap.min.js"></script>
+<script src="http://ajax.aspnetcdn.com/ajax/knockout/knockout-2.2.1.js"></script>
+</head>
+<body>
+	<div class="navbar">
+		<div class="navbar-inner">
+			<a class="brand" href="#">fUber</a>
+		</div>
+	</div>
+	<div id="main" class="container">
+		<table class="table table-striped">
+			<tr>
+				<td style="width: 1px;"><b>Availablity</b></td>
+				<td><b>Driver Name</b></td>
+				<td><b>Phone</b></td>
+				<td><b>Location</b></td>
+			</tr>
+			<!-- ko foreach: taxis -->
+			<tr>
+				<td><span data-bind="visible: avail()=='true'"
+					class="label label-success">Available</span> <span
+					data-bind="visible: avail()=='false'" class="label label-important">In
+						Trip</span></td>
+				<td><p data-bind="text: name"></p></td>
+				<td><p data-bind="text: phone"></p></td>
+				<td><p>
+						Lat: <span data-bind="text: lat"></span>
+					</p>
+					<p>
+						Long: <span data-bind="text: longi"></span>
+					</p></td>
+			</tr>
+			<!-- /ko -->
+		</table>
+		<button data-bind="click: addCab" class="btn">Add Cab</button>
+	</div>
+	<div id="add" class="modal hide fade" tabindex="=1" role="dialog"
+		aria-labelledby="addDialogLabel" aria-hidden="true">
+		<div class="modal-header">
+			<button type="button" class="close" data-dismiss="modal"
+				aria-hidden="true">x</button>
+			<h3 id="addDialogLabel">Add Taxi</h3>
+		</div>
+		<div class="modal-body">
+			<form class="form-horizontal">
+				<div class="control-group">
+					<label class="control-label" for="inputName">Name</label>
+					<div class="controls">
+						<input data-bind="value: name" type="text" id="inputName"
+							placeholder="Driver name" style="width: 150px;">
+					</div>
+				</div>
+				<div class="control-group">
+					<label class="control-label" for="inputPhone">Phone</label>
+					<div class="controls">
+						<input data-bind="value: phone" type="text"
+							id="inputPhone" placeholder="Phone number"
+							style="width: 150px;">
+					</div>
+				</div>
+				<div class="control-group">
+					<label class="control-label" for="inputLat">Latitude</label>
+					<div class="controls">
+						<input data-bind="value: lat" type="number"
+							id="inputLat" placeholder="Enter current latitude of taxi"
+							style="width: 150px;">
+					</div>
+				</div><div class="control-group">
+					<label class="control-label" for="inputLong">Longitude</label>
+					<div class="controls">
+						<input data-bind="value: longi" type="number"
+							id="inputLong" placeholder="Enter current longitude of taxi"
+							style="width: 150px;">
+					</div>
+				</div>
+			</form>
+		</div>
+		<div class="modal-footer">
+			<button data-bind="click: addCab" class="btn btn-primary">Add
+				Cab</button>
+			<button class="btn" data-dismiss="modal" aria-hidden="true">Cancel</button>
+		</div>
+	</div>
+	<script type="text/javascript">
+		function TaxiViewModel() {
+			var self = this;
+			self.taxis = ko.observableArray();
+			self.taxiURI = 'http://localhost:8080/Fuber/app/taxiservice/listtaxi';
+
+			self.ajax = function(uri, method, data) {
+				var request = {
+					url : uri,
+					type : method,
+					contentType : "application/json",
+					accept : "application/json",
+					cache : false,
+					dataType : 'json',
+					data : JSON.stringify(data),
+					error : function(jqXHR) {
+						console.log("ajax error " + jqXHR.status);
+					}
+				};
+				return $.ajax(request);
+			}
+			self.addCab = function() {
+				$('#add').modal('show');
+			}
+			self.ajax(self.taxiURI, 'GET').done(function(data) {
+				for (var i = 0; i < data.taxi.length; i++) {
+					self.taxis.push({
+						name : ko.observable(data.taxi[i].name),
+						phone : ko.observable(data.taxi[i].phone),
+						lat : ko.observable(data.taxi[i].taxiLocation.lat),
+						longi : ko.observable(data.taxi[i].taxiLocation.longi),
+						avail : ko.observable(data.taxi[i].isAvailable),
+						pink : ko.observable(data.taxi[i].isPink)
+					});
+				}
+			});
+		}
+		ko.applyBindings(new TaxiViewModel(), $('#main')[0]);
+	</script>
+</body>
+</html>
