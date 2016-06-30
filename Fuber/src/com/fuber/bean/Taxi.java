@@ -18,6 +18,15 @@ public class Taxi {
 
 	}
 
+	public Taxi(String name, String phone, Location taxiLocation, Boolean isPink, Boolean isAvailable) {
+		super();
+		this.name = name;
+		this.phone = phone;
+		this.taxiLocation = taxiLocation;
+		this.isPink = isPink;
+		this.isAvailable = isAvailable;
+	}
+
 	public Taxi(Taxi pTaxi) {
 		name = pTaxi.getName();
 		phone = pTaxi.getPhone();
@@ -27,7 +36,6 @@ public class Taxi {
 		tripStartLocation = pTaxi.getTripStartLocation();
 		tripStartTime = pTaxi.getTripStartTime();
 	}
-
 
 	public Instant getTripStartTime() {
 		return tripStartTime;

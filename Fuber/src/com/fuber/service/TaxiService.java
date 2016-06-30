@@ -42,7 +42,6 @@ public class TaxiService {
 
 	@POST
 	@Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
-	@Consumes({ MediaType.APPLICATION_FORM_URLENCODED })
 	@Path("/booktaxi")
 	public Response bookTaxi(@FormParam("lat") Double pPickupLocationLat, @FormParam("long") Double pPickupLocationLong,
 			@FormParam("pink") boolean pIsPink) throws FuberException {
@@ -58,6 +57,37 @@ public class TaxiService {
 		}
 		updateTaxiInDB(FuberUtility.updateTaxiAttributesForTripStart(taxi, pickupLocation));
 		return Response.ok(taxi).build();
+	}
+
+	@POST
+	@Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
+	@Path("/addtaxi")
+	public Response addtaxi(@FormParam("phone") String pDriverPhone, @FormParam("name") String pDriverName,
+			@FormParam("lat") Double pInitialLat, @FormParam("long") Double pInitialLong,
+			@FormParam("pink") boolean pIsPink) throws FuberException {
+		if (pInitialLong == null || pInitialLong == null || !FuberUtility.isEmpty(pDriverName)
+				|| !FuberUtility.isEmpty(pDriverPhone)) {
+			throw new FuberException(409, 409, "Insufficient data", "Check headers and http request format");
+		}
+		if (checkTaxiExistence(pDriverPhone)) {
+			throw new FuberException(204, 204, "Taxi is already registered with the same phone number",
+					"Try different phone number");
+		}
+		Taxi taxi = new Taxi(pDriverName, pDriverPhone, new Location(pInitialLat, pInitialLong), pIsPink, true);
+		createTaxiInDB(taxi);
+		return Response.ok(taxi).build();
+	}
+
+	private void createTaxiInDB(Taxi pTaxi) throws FuberException {
+		try {
+			TaxiDao.Taxi.getTaxiCollection().insert(DatabaseAdaptor.transformTaxiToDBObject(pTaxi));
+		} catch (MongoException e) {
+			throw new FuberException(409, 409, "Failed to add taxi. Try again later ", "Check DB is up and running");
+		}
+	}
+
+	private boolean checkTaxiExistence(String pDriverPhone) throws FuberException {
+		return !TaxiDao.Taxi.getTaxiCollection().find(new BasicDBObject("phone", pDriverPhone)).toArray().isEmpty();
 	}
 
 	@POST

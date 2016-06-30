@@ -8,6 +8,10 @@ import com.fuber.bean.Location;
 import com.fuber.bean.Taxi;
 
 public class FuberUtility {
+	
+	public static boolean isEmpty(String pInput){
+		return pInput!=null && pInput.trim().length()>0;
+	}
 	/**
 	 * Method to calculate distance between two latitude/longitude using
 	 * pythagoras theorem

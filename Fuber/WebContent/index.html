@@ -42,7 +42,7 @@
 			</tr>
 			<!-- /ko -->
 		</table>
-		<button data-bind="click: addCab" class="btn">Add Cab</button>
+		<button data-bind="click: openAddModal" class="btn">Add Taxi</button>
 	</div>
 	<div id="add" class="modal hide fade" tabindex="=1" role="dialog"
 		aria-labelledby="addDialogLabel" aria-hidden="true">
@@ -63,30 +63,37 @@
 				<div class="control-group">
 					<label class="control-label" for="inputPhone">Phone</label>
 					<div class="controls">
-						<input data-bind="value: phone" type="text"
-							id="inputPhone" placeholder="Phone number"
-							style="width: 150px;">
+						<input data-bind="value: phone" type="text" id="inputPhone"
+							placeholder="Phone number" style="width: 150px;">
 					</div>
 				</div>
 				<div class="control-group">
 					<label class="control-label" for="inputLat">Latitude</label>
 					<div class="controls">
-						<input data-bind="value: lat" type="number"
-							id="inputLat" placeholder="Enter current latitude of taxi"
+						<input data-bind="value: lat" type="number" id="inputLat"
+							placeholder="Enter current latitude of taxi"
 							style="width: 150px;">
 					</div>
-				</div><div class="control-group">
+				</div>
+				<div class="control-group">
 					<label class="control-label" for="inputLong">Longitude</label>
 					<div class="controls">
-						<input data-bind="value: longi" type="number"
-							id="inputLong" placeholder="Enter current longitude of taxi"
+						<input data-bind="value: longi" type="number" id="inputLong"
+							placeholder="Enter current longitude of taxi"
 							style="width: 150px;">
+					</div>
+				</div>
+				<div class="control-group">
+					<label class="control-label" for="inputPink">Is Taxi Color
+						Pink?</label>
+					<div class="controls">
+						<input data-bind="value: pink" type="checkbox" id="inputPink">
 					</div>
 				</div>
 			</form>
 		</div>
 		<div class="modal-footer">
-			<button data-bind="click: addCab" class="btn btn-primary">Add
+			<button data-bind="click: addTaxi" class="btn btn-primary">Add
 				Cab</button>
 			<button class="btn" data-dismiss="modal" aria-hidden="true">Cancel</button>
 		</div>
@@ -95,8 +102,9 @@
 		function TaxiViewModel() {
 			var self = this;
 			self.taxis = ko.observableArray();
+			self.fuberURI = 'http://localhost:8080/Fuber/app/taxiservice'
 			self.taxiURI = 'http://localhost:8080/Fuber/app/taxiservice/listtaxi';
-
+			self.addTaxiURI = 'http://localhost:8080/Fuber/app/taxiservice/addtaxi';
 			self.ajax = function(uri, method, data) {
 				var request = {
 					url : uri,
@@ -112,10 +120,12 @@
 				};
 				return $.ajax(request);
 			}
-			self.addCab = function() {
+			self.openAddModal = function() {
 				$('#add').modal('show');
 			}
 			self.ajax(self.taxiURI, 'GET').done(function(data) {
+				if (data === null)
+					return null;
 				for (var i = 0; i < data.taxi.length; i++) {
 					self.taxis.push({
 						name : ko.observable(data.taxi[i].name),
@@ -127,8 +137,50 @@
 					});
 				}
 			});
+			self.add = function(taxi) {
+				self.ajax(self.addTaxiURI, 'POST', taxi).done(function(data) {
+					self.taxis.push({
+						name : ko.observable(data.taxi.name),
+						phone : ko.observable(data.taxi.phone),
+						lat : ko.observable(data.taxi.taxiLocation.lat),
+						longi : ko.observable(data.taxi.taxiLocation.longi),
+						avail : ko.observable(data.taxi.isAvailable),
+						pink : ko.observable(data.taxi.isPink)
+					});
+				});
+			}
 		}
-		ko.applyBindings(new TaxiViewModel(), $('#main')[0]);
+		function AddTaxiViewModel() {
+			var self = this;
+			self.name = ko.observable();
+			self.phone = ko.observable();
+			self.lat = ko.observable();
+			self.longi = ko.observable();
+			self.pink = ko.observable();
+
+			self.addTaxi = function() {
+				$('#add').modal('hide');
+				taxiViewModel.add({
+					name : self.name(),
+					phone : self.phone(),
+					taxiLocation : {
+						lat : self.lat(),
+						longi : self.longi()
+					},
+					isAvailable : true,
+					isPink : self.pink()
+				});
+				self.name("");
+				self.phone("");
+				self.lat(null);
+				self.longi(null);
+				self.pink(false);
+			}
+		}
+		var taxiViewModel = new TaxiViewModel();
+		var addTaxiViewModel = new AddTaxiViewModel();
+		ko.applyBindings(taxiViewModel, $('#main')[0]);
+		ko.applyBindings(addTaxiViewModel, $('#add')[0]);
 	</script>
 </body>
 </html>
