@@ -2,18 +2,20 @@ package com.fuber.service;
 
 import java.util.List;
 
+import javax.ws.rs.Consumes;
+import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
-import javax.ws.rs.PUT;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.GenericEntity;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.Status;
 
 import com.fuber.bean.Location;
 import com.fuber.bean.Taxi;
+import com.fuber.bean.Trip;
 import com.fuber.database.TaxiDao;
 import com.fuber.errorhandling.FuberException;
 import com.fuber.util.Constants;
@@ -38,48 +40,47 @@ public class TaxiService {
 		return Response.ok(entity).build();
 	}
 
-	@GET
+	@POST
 	@Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
-	@Path("/booktaxi/{lat}/{long}")
-	public Response bookTaxi(@PathParam("lat") Double pLat, @PathParam("long") Double pLong) throws FuberException {
-		return bookTaxi(pLat, pLong, false);
-	}
-
-	@GET
-	@Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
-	@Path("/booktaxi/{lat}/{long}/{pink}")
-	public Response bookTaxi(@PathParam("lat") Double pPickupLocationLat, @PathParam("long") Double pPickupLocationLong,
-			@PathParam("pink") Boolean pIsPink) throws FuberException {
-
+	@Consumes({ MediaType.APPLICATION_FORM_URLENCODED })
+	@Path("/booktaxi")
+	public Response bookTaxi(@FormParam("lat") Double pPickupLocationLat, @FormParam("long") Double pPickupLocationLong,
+			@FormParam("pink") boolean pIsPink) throws FuberException {
+		if (pPickupLocationLat == null || pPickupLocationLong == null) {
+			throw new FuberException(400, 400, "Insufficient data", "Check headers and http request format");
+		}
 		// Find the nearest taxi if available
 		Location pickupLocation = new Location(pPickupLocationLat, pPickupLocationLong);
 		Taxi taxi = FuberUtility.getNearestTaxi(getTaxiListFromDB(true, pIsPink), pickupLocation, pIsPink);
 
 		if (taxi == null) {
-			return Response.status(200).entity("Taxi not available. Try again Later :(").build();
+			throw new FuberException(204, 204, "Taxi not available", "Try Later :(");
 		}
 		updateTaxiInDB(FuberUtility.updateTaxiAttributesForTripStart(taxi, pickupLocation));
 		return Response.ok(taxi).build();
 	}
 
-	@GET
+	@POST
 	@Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
-	@Path("/endtrip/{phone}/{lat}/{long}")
-	public Response endTrip(@PathParam("phone") String pDriverPhoneNo, @PathParam("lat") Double pDropLocationLat,
-			@PathParam("long") Double pDropLocationLong) throws FuberException {
+	@Path("/endtrip")
+	public Response endTrip(@FormParam("phone") String pDriverPhoneNo, @FormParam("lat") Double pDropLocationLat,
+			@FormParam("long") Double pDropLocationLong) throws FuberException {
 
+		if (pDriverPhoneNo == null || pDropLocationLat == null || pDropLocationLong == null) {
+			throw new FuberException(400, 400, "Insufficient data.", "Check headers and http request format");
+		}
 		Taxi taxi = findTaxiInDatabaseByDriverPhoneNo(pDriverPhoneNo, false);
 		if (taxi == null) {
-			throw new FuberException(Response.Status.BAD_REQUEST.getStatusCode(), 400,
-					"Taxi in-trip not found with phone no:" + pDriverPhoneNo,
+			throw new FuberException(204, 204, "Taxi in-trip not found with phone no:" + pDriverPhoneNo,
 					"Please verify taxi with phone no [" + pDriverPhoneNo + "] is in trip.");
 		}
-		Location tripEndLocation = new Location(pDropLocationLat, pDropLocationLat);
+		Location tripEndLocation = new Location(pDropLocationLat, pDropLocationLong);
 		Double totalTripCost = FuberUtility.calculateTripCharge(taxi.getTripStartLocation(), tripEndLocation,
 				taxi.getTripStartTime(), taxi.getIsPink());
-		Taxi taxiEndTrip = FuberUtility.updateTaxiAttributesForTripEnd(taxi, tripEndLocation);
-		updateTaxiInDB(taxiEndTrip);
-		return Response.status(200).entity("Trip Ended. Total Amount Payable = " + totalTripCost + " Dogecoin").build();
+		Taxi targetTaxi = FuberUtility.updateTaxiAttributesForTripEnd(taxi, tripEndLocation);
+		updateTaxiInDB(targetTaxi);
+		return Response.status(200).entity(new Trip(taxi.getName(), taxi.getPhone(), tripEndLocation, taxi.getIsPink(),
+				taxi.getTripStartLocation(), totalTripCost)).build();
 
 	}
 

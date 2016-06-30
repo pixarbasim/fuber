@@ -26,7 +26,6 @@ public class Taxi {
 		isAvailable = pTaxi.getIsAvailable();
 		tripStartLocation = pTaxi.getTripStartLocation();
 		tripStartTime = pTaxi.getTripStartTime();
-		System.out.println("----"+taxiLocation.getLat());
 	}
 
 
