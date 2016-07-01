@@ -43,7 +43,7 @@ public class TaxiService {
 	@POST
 	@Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
 	@Path("/booktaxi")
-	public Response bookTaxi(@FormParam("lat") Double pPickupLocationLat, @FormParam("long") Double pPickupLocationLong,
+	public Response bookTaxi(@FormParam("lat") Double pPickupLocationLat, @FormParam("longi") Double pPickupLocationLong,
 			@FormParam("pink") boolean pIsPink) throws FuberException {
 		if (pPickupLocationLat == null || pPickupLocationLong == null) {
 			throw new FuberException(400, 400, "Insufficient data", "Check headers and http request format");
@@ -63,9 +63,9 @@ public class TaxiService {
 	@Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
 	@Path("/addtaxi")
 	public Response addtaxi(@FormParam("phone") String pDriverPhone, @FormParam("name") String pDriverName,
-			@FormParam("lat") Double pInitialLat, @FormParam("long") Double pInitialLong,
+			@FormParam("lat") Double pInitialLat, @FormParam("longi") Double pInitialLong,
 			@FormParam("pink") boolean pIsPink) throws FuberException {
-		if (pInitialLong == null || pInitialLong == null || !FuberUtility.isEmpty(pDriverName)
+		if (pInitialLat == null || pInitialLong == null || !FuberUtility.isEmpty(pDriverName)
 				|| !FuberUtility.isEmpty(pDriverPhone)) {
 			throw new FuberException(409, 409, "Insufficient data", "Check headers and http request format");
 		}
@@ -94,7 +94,7 @@ public class TaxiService {
 	@Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
 	@Path("/endtrip")
 	public Response endTrip(@FormParam("phone") String pDriverPhoneNo, @FormParam("lat") Double pDropLocationLat,
-			@FormParam("long") Double pDropLocationLong) throws FuberException {
+			@FormParam("longi") Double pDropLocationLong) throws FuberException {
 
 		if (pDriverPhoneNo == null || pDropLocationLat == null || pDropLocationLong == null) {
 			throw new FuberException(400, 400, "Insufficient data.", "Check headers and http request format");
