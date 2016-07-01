@@ -138,8 +138,14 @@
 				}
 			});
 			self.add = function(taxi) {
-				self.ajax(self.addTaxiURI, 'POST', taxi).done(function(data) {
-					self.taxis.push({
+			$.ajax({
+	           type: "POST",
+	           url: self.addTaxiURI,
+			   contentType:'application/x-www-form-urlencoded',
+	           data:  {name:taxi.name,lat:taxi.taxiLocation.lat,longi:taxi.taxiLocation.longi,phone:taxi.phone,pink:taxi.isPink}, 
+	           success: function(data)
+	           {
+	               self.taxis.push({
 						name : ko.observable(data.taxi.name),
 						phone : ko.observable(data.taxi.phone),
 						lat : ko.observable(data.taxi.taxiLocation.lat),
@@ -147,7 +153,9 @@
 						avail : ko.observable(data.taxi.isAvailable),
 						pink : ko.observable(data.taxi.isPink)
 					});
-				});
+	           }
+	         }); 
+				
 			}
 		}
 		function AddTaxiViewModel() {
