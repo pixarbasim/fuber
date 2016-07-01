@@ -149,12 +149,12 @@
 	           success: function(data)
 	           {
 	               self.taxis.push({
-						name : ko.observable(data.taxi.name),
-						phone : ko.observable(data.taxi.phone),
-						lat : ko.observable(data.taxi.taxiLocation.lat),
-						longi : ko.observable(data.taxi.taxiLocation.longi),
-						avail : ko.observable(data.taxi.isAvailable),
-						pink : ko.observable(data.taxi.isPink)
+						name : ko.observable(data.name),
+						phone : ko.observable(data.phone),
+						lat : ko.observable(data.taxiLocation.lat),
+						longi : ko.observable(data.taxiLocation.longi),
+						avail : ko.observable(data.isAvailable),
+						pink : ko.observable(data.isPink)
 					});
 	           }
 	         }); 
