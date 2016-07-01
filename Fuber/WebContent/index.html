@@ -142,7 +142,10 @@
 	           type: "POST",
 	           url: self.addTaxiURI,
 			   contentType:'application/x-www-form-urlencoded',
-	           data:  {name:taxi.name,lat:taxi.taxiLocation.lat,longi:taxi.taxiLocation.longi,phone:taxi.phone,pink:taxi.isPink}, 
+	           accept : "application/json",
+		   dataType : 'json',
+	           data:  {name:taxi.name,lat:taxi.taxiLocation.lat,longi:taxi.taxiLocation.longi,phone:taxi.phone,pink:taxi.isPink},
+	           
 	           success: function(data)
 	           {
 	               self.taxis.push({
